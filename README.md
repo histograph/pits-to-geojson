@@ -2,6 +2,8 @@
 
 Convert NDJSON files containing Histograph PITs to GeoJSON.
 
+__Please note:__ pits-to-geojson only processes PITs with a `geometry` field!
+
 ## Installation
 
     npm install -g histograph/pits-to-geojson
@@ -17,3 +19,11 @@ Convert only PITs of a certain type:
 Example:
 
     pits-to-geojson --types=hg:Building <path to NDJSON file>
+
+Only transfer a selection of fields to the GeoJSON `properties` object:
+
+    pits-to-geojson --properties=<comma separated list of keys> <path to NDJSON file>
+
+Example:
+
+    pits-to-geojson --properties=uri,validSince <path to NDJSON file>

@@ -20,6 +20,11 @@ if (argv.types) {
   types = argv.types.split(',');
 }
 
+var properties = null;
+if (argv.properties) {
+  properties = argv.properties.split(',');
+}
+
 var filename = argv._[0];
 
 fs.exists(filename, function(exists) {
@@ -47,9 +52,20 @@ function pitToFeature(pit) {
   var geometry = pit.geometry;
   delete pit.geometry;
 
+  var p = {};
+  if (!properties) {
+    p = pit;
+  } else {
+    properties.forEach(function(property) {
+      if (pit[property]) {
+        p[property] = pit[property];
+      }
+    });
+  }
+
   return feature = {
     type: 'Feature',
-    properties: pit,
+    properties: p,
     geometry: geometry
   };
 }
