@@ -32,23 +32,37 @@ fs.exists(filename, function(exists) {
 });
 
 function hasType(types, pit) {
-  if (pit.length > 0 && types && types.length > 0) {
-    var type = JSON.parse(pit).type;
-    return types.indexOf(type) > -1;
+  if (types && types.length > 0) {
+    return types.indexOf(pit.type) > -1;
   } else {
     return true;
   }
 }
 
-function hasLength(pit) {
-  return pit.length > 0;
+function hasGeometry(pit) {
+  return pit.geometry;
+}
+
+function pitToFeature(pit) {
+  var geometry = pit.geometry;
+  delete pit.geometry;
+
+  return feature = {
+    type: 'Feature',
+    properties: pit,
+    geometry: geometry
+  };
 }
 
 function pitsToGeoJSON(filename, types) {
   var through = _.pipeline(
     _.split(),
+    _.compact(),
+    _.map(JSON.parse),
     _.filter(_.curry(hasType, types)),
-    _.filter(hasLength),
+    _.filter(hasGeometry),
+    _.map(pitToFeature),
+    _.map(JSON.stringify),
     _.intersperse(',')
   );
 
