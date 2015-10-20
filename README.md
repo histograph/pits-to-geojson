@@ -27,3 +27,5 @@ Only transfer a selection of fields to the GeoJSON `properties` object:
 Example:
 
     pits-to-geojson --properties=uri,validSince <path to NDJSON file>
+    
+Copyright (C) 2015 [Waag Society](http://waag.org).
