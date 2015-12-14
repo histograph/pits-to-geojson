@@ -90,5 +90,8 @@ function pitsToGeoJSON(filename, types) {
   ]);
 
   streams.sequence()
-    .pipe(process.stdout);
+    .append('\n')
+    .pipe(argv.o ? fs.createWriteStream(argv.o, 'utf8') : process.stdout);
+
+
 }
