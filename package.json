@@ -1,6 +1,6 @@
 {
   "name": "pits-to-geojson",
-  "version": "0.5.0",
+  "version": "0.5.2",
   "description": "Convert NDJSON files containing Histograph PITs to GeoJSON",
   "main": "index.js",
   "bin": {
