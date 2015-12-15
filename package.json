@@ -14,7 +14,7 @@
     "test": "jshint index.js && jscs index.js"
   },
   "author": "Bert Spaan",
-  "license": "GPLv3",
+  "license": "MIT",
   "devDependencies": {
     "jscs": "^1.10.0",
     "jshint": "^2.6.0",
