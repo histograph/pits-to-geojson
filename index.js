@@ -50,18 +50,18 @@ function open(pit) {
   return pit;
 }
 
-module.exports = function(config) {
-  if (!config) {
-    config = {};
+module.exports = function(options) {
+  if (!options) {
+    options = {};
   }
 
   return H.pipeline(
     H.split(),
     H.compact(),
     H.map(JSON.parse),
-    H.filter(H.curry(hasType, config.types)),
+    H.filter(H.curry(hasType, options.types)),
     H.filter(hasGeometry),
-    H.map(H.curry(pitToFeature, config.data)),
+    H.map(H.curry(pitToFeature, options.data)),
     H.map(JSON.stringify),
     H.intersperse(','),
     H.append(''),
