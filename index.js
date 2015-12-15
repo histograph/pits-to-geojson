@@ -1,40 +1,9 @@
-#!/usr/bin/env node
-
-var fs = require('fs');
-var util = require('util');
-var _ = require('highland');
-var argv = require('minimist')(process.argv.slice(2));
+var H = require('highland');
 
 var geojson = {
   open: '{"type":"FeatureCollection","features":[',
-  close: ']}'
+  close: ']}\n'
 };
-
-if (argv._.length != 1) {
-  console.error('Please supply one Histograph NDJSON PIT file as command line argument');
-  process.exit(1);
-}
-
-var types = null;
-if (argv.types) {
-  types = argv.types.split(',');
-}
-
-var properties = null;
-if (argv.properties) {
-  properties = argv.properties.split(',');
-}
-
-var filename = argv._[0];
-
-fs.exists(filename, function(exists) {
-  if (exists) {
-    pitsToGeoJSON(filename, types);
-  } else {
-    console.error(util.format('File does not exist: %s', filename));
-    process.exit(1);
-  }
-});
 
 function hasType(types, pit) {
   if (types && types.length > 0) {
@@ -48,50 +17,55 @@ function hasGeometry(pit) {
   return pit.geometry;
 }
 
-function pitToFeature(pit) {
+function pitToFeature(data, pit) {
   var geometry = pit.geometry;
   delete pit.geometry;
 
-  var p = {};
-  if (!properties) {
-    p = pit;
-  } else {
-    properties.forEach(function(property) {
-      if (pit[property]) {
-        p[property] = pit[property];
-      }
-    });
+  if (data && pit.data) {
+    if (data.length === 0) {
+      delete pit.data;
+    } else {
+      Object.keys(pit.data).forEach(function(key) {
+        if (data.indexOf(key) === -1) {
+          delete pit.data[key];
+        }
+      });
+    }
   }
 
-  return feature = {
+  return {
     type: 'Feature',
-    properties: p,
+    properties: pit,
     geometry: geometry
   };
 }
 
-function pitsToGeoJSON(filename, types) {
-  var through = _.pipeline(
-    _.split(),
-    _.compact(),
-    _.map(JSON.parse),
-    _.filter(_.curry(hasType, types)),
-    _.filter(hasGeometry),
-    _.map(pitToFeature),
-    _.map(JSON.stringify),
-    _.intersperse(',')
-  );
+var first = true;
+function open(pit) {
+  if (first) {
+    pit = geojson.open + pit;
+  }
 
-  var streams = _([
-    _([geojson.open]),
-    fs.createReadStream(filename, {encoding: 'utf8'})
-      .pipe(through),
-    _([geojson.close])
-  ]);
-
-  streams.sequence()
-    .append('\n')
-    .pipe(argv.o ? fs.createWriteStream(argv.o, 'utf8') : process.stdout);
-
-
+  first = false;
+  return pit;
 }
+
+module.exports = function(config) {
+  if (!config) {
+    config = {};
+  }
+
+  return H.pipeline(
+    H.split(),
+    H.compact(),
+    H.map(JSON.parse),
+    H.filter(H.curry(hasType, config.types)),
+    H.filter(hasGeometry),
+    H.map(H.curry(pitToFeature, config.data)),
+    H.map(JSON.stringify),
+    H.intersperse(','),
+    H.append(''),
+    H.map(open),
+    H.append(geojson.close)
+  );
+};

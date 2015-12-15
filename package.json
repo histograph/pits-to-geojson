@@ -1,17 +1,17 @@
 {
   "name": "pits-to-geojson",
-  "version": "0.5.2",
+  "version": "0.6.0",
   "description": "Convert NDJSON files containing Histograph PITs to GeoJSON",
   "main": "index.js",
   "bin": {
-    "pits-to-geojson": "index.js"
+    "pits-to-geojson": "cli.js"
   },
   "repository": {
     "type": "git",
     "url": "https://github.com/histograph/pits-to-geojson.git"
   },
   "scripts": {
-    "test": "jshint index.js && jscs index.js"
+    "test": "jshint *.js && jscs *.js"
   },
   "author": "Bert Spaan",
   "license": "MIT",
