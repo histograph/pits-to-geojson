@@ -34,6 +34,8 @@ fs.createReadStream('file.ndjson', 'utf8')
     .pipe(process.stdout);
 ```    
 
+When used as a NPM module, pits-to-geojson expects a readable string stream, and outputs a stream of GeoJSON features.
+
 ## Options
 
 Convert only PITs of a certain type:

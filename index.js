@@ -1,10 +1,5 @@
 var H = require('highland');
 
-var geojson = {
-  open: '{"type":"FeatureCollection","features":[',
-  close: ']}\n'
-};
-
 function hasType(types, pit) {
   if (types && types.length > 0) {
     return types.indexOf(pit.type) > -1;
@@ -61,11 +56,6 @@ module.exports = function(options) {
     H.map(JSON.parse),
     H.filter(H.curry(hasType, options.types)),
     H.filter(hasGeometry),
-    H.map(H.curry(pitToFeature, options.data)),
-    H.map(JSON.stringify),
-    H.intersperse(','),
-    H.append(''),
-    H.map(open),
-    H.append(geojson.close)
+    H.map(H.curry(pitToFeature, options.data))
   );
 };
